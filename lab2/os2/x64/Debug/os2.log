@@ -1,0 +1,8 @@
+﻿  Source.cpp
+C:\os\lab2\os2\os2\Source.cpp(20,25): warning C4244: =: преобразование "unsigned __int64" в "double", возможна потеря данных
+C:\os\lab2\os2\os2\Source.cpp(87,35): warning C4244: =: преобразование "double" в "_Ty", возможна потеря данных
+          with
+          [
+              _Ty=int
+          ]
+  os2.vcxproj -> C:\os\lab2\os2\x64\Debug\os2.exe
