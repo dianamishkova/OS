@@ -13,18 +13,17 @@ int main(int argc, char* argv[])
         HANDLE startupEvent = OpenEventA(SYNCHRONIZE, FALSE, "SenderStartupEvent");
         std::ofstream fout(argv[0], std::ios_base::binary | std::ios_base::out | std::ios_base::app);
         std::string message;
-        SignalObjectAndWait(busyEvent, startupEvent, INFINITE, FALSE);//выполнили первые 2 пункта
+        SignalObjectAndWait(busyEvent, startupEvent, INFINITE, FALSE);
         while (true) {
             std::cout << "Введите сообщение для передачи или введите 0 для прекращения работы.\n";
             std::cin >> message;
             if (message.compare("0") == 0)
                 break; 
-            WaitForSingleObject(mutex, INFINITE);//мьютекс нужен чтобы два потока одновременно вместе не редактировали файл
-            //вообще тут надо было использовать семафор. это подразумевается по заданию, но я сделал так и он принял. Так проще, но может не принять
+            WaitForSingleObject(mutex, INFINITE);
             fout << message << std::endl;  
             if(WaitForSingleObject(startupEvent, 0) == WAIT_TIMEOUT)
                 SetEvent(busyEvent);
-            ReleaseMutex(mutex);//освобождаем мьютекс, чтобы его мог дождаться какой-нибудь другой ждущий sender
+            ReleaseMutex(mutex);
         }
         CloseHandle(startupEvent);
         CloseHandle(mutex);
