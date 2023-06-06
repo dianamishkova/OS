@@ -7,9 +7,9 @@
 #include <map>
 struct employee
 {
-    int num; // идентификационный номер сотрудника
-    std::string name; // имя сотрудника
-    double hours; // количество отработанных часов
+    int num; 
+    std::string name; 
+    double hours;
 };
 enum States {
     FREE,
