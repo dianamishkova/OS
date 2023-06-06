@@ -37,38 +37,35 @@ int main()
         }
         senders[i] = sendersPI[i].hProcess;
     }//выполнили первые три пункта
-    WaitForMultipleObjects(sendersCount, busyEvents, TRUE, INFINITE);//ждем сигнал от всех sender (4 пункт)
+    WaitForMultipleObjects(sendersCount, busyEvents, TRUE, INFINITE);
     SetEvent(startupEvent); //даем всем им команду на старт
     std::string response;
-    while (WaitForMultipleObjects(sendersCount, senders, TRUE, 0) == WAIT_TIMEOUT) {//пока все sender не завершат работу
+    while (WaitForMultipleObjects(sendersCount, senders, TRUE, 0) == WAIT_TIMEOUT) {
         std::cout << "Введите 0 для попытки чтения сообщений из файла.\n";
         do {
             std::cin >> response;
         } while (response.compare("0") != 0);
         std::string message;
-        fin.sync();//синхронизируем поток чтения и файл (могло добавиться сообщений), 
-        //я уже хз зачем конкретно нужно, вроде бы, чтобы указатель норм работал, не двигался
-        if (!(std::getline(fin, message))) {//если не удалось прочитать
+        fin.sync();
+        if (!(std::getline(fin, message))) {
             std::cout << "Новые сообщения отсутствуют. Ожидание.\n";
-            fin.clear();//см строку 49, а еще лучше документацию
-            ResetEvent(startupEvent); //мы тут ждем новые сообщения, следовательно, нужно, чтоюы sender знал,
-            //что нужно уведомить reciever, что появилось новое сообщение. А саму информацию о появлении 
-            //reciever получает через busyEvents в строке ниже
+            fin.clear();
+            ResetEvent(startupEvent); 
+            
             do {
                 if (WaitForMultipleObjects(sendersCount, busyEvents, FALSE, 5000) != WAIT_TIMEOUT)
-                    //в течение 5000мс ждем появление новых сообщений
+                    
                     break;
-            } while (WaitForMultipleObjects(sendersCount, senders, TRUE, 0) == WAIT_TIMEOUT);//если не появилось, проверяем, активны ли вообще senders
+            } while (WaitForMultipleObjects(sendersCount, senders, TRUE, 0) == WAIT_TIMEOUT);
             SetEvent(startupEvent);
         }
         else {
-            std::cout << message << std::endl; //если удалось прочитать, выводим сообщение
+            std::cout << message << std::endl; 
         }
         while (std::getline(fin, message)) {
             std::cout << message << std::endl;
-        }//выводим все оставшиеся до конца файла новые записи (в ифе мы сначала проверили, 
-        //есть ли они вообще и прочитали первое). Если их нет, этот цикл выполняться не буудет
-        fin.clear();//см строку 49, а еще лучше документацию
+        }
+        fin.clear();
     }
     for (int i = 0; i < sendersCount; i++) {
         CloseHandle(sendersPI[i].hThread);
